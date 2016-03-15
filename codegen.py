@@ -1,7 +1,7 @@
 from peachpy import *
 from peachpy.x86_64 import *
 from plyplus import *
-out = ".text\n_start:\n"
+out = ".text\n.globl start\nstart:\n"
 vars = ".intel_syntax noprefix\n.data\n"
 
 class VariableTransform(STransformer):

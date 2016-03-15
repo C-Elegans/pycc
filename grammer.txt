@@ -1,5 +1,5 @@
 start: assign ('\n' assign)* ;
-assign: (vardec|var) '=' number ';' ;
+assign: (vardec|var) '=' (number|var) ';' ;
 vardec: 'int ' identifier ;
 var: identifier ;
 
