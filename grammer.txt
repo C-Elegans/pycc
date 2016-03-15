@@ -1,5 +1,8 @@
-start: assign ;
-assign: 'int ' identifier '=' number ';' ;
+start: assign ('\n' assign)* ;
+assign: (vardec|var) '=' number ';' ;
+vardec: 'int ' identifier ;
+var: identifier ;
+
 number: '[0-9]+' ;
 identifier: '\w+' ;
 SPACES: '[ \t]+' (%ignore) ;
