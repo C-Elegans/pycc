@@ -4,4 +4,6 @@ file =  f.read()
 print file
 ast = parser.parse(file)
 print ast.pretty()
-codegen.generate(ast)
+out = codegen.generate(ast)
+o = open(sys.argv[2],"w")
+o.write(out)

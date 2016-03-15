@@ -1,8 +1,8 @@
 from peachpy import *
 from peachpy.x86_64 import *
 from plyplus import *
-out = "_start:\n"
-vars = ""
+out = ".text\n_start:\n"
+vars = ".intel_syntax noprefix\n.data\n"
 
 class VariableTransform(STransformer):
     def vardec(self,tree):
@@ -10,23 +10,27 @@ class VariableTransform(STransformer):
         vars += "_"+tree.tail[0].tail[0]+":\n"
         vars += ".int 0\n"
         return tree.tail[0]
-
-def generate(ast):
-    ast = gen_vars(ast)
-    gen_recursive(ast)
-    print vars+out
-    
-def gen_vars(ast):
-    ast = VariableTransform().transform(ast)
-    return ast
+class CodeGen(STransformer):
+    def assign(self, tree):
+        global out
+        print "assign: " + str(tree.tail)
+        out += "pop rax\n"
+        out += "pop rbx\n"
+        out += "mov [rbx],eax\n"
+        return tree
+    def identifier(self, tree):
+        global out
         
-def gen_recursive(ast):
-    global vars,out
-    if type(ast) == strees.STree:
-        for t in ast.tail:
-            gen_recursive(t)
-
-        if ast.head == 'assign':
-            print "assign: " + str(ast.tail)
-            out += "mov [rip+_"+ast.tail[0].tail[0] + "],"+ast.tail[1].tail[0]+"\n"
-            
+        out += "lea rax,[rip+_"+tree.tail[0]+"]\n"
+        out += "push rax\n"
+        return tree
+    def number(self, tree):
+        global out
+        out += "push " + tree.tail[0] +"\n"
+        return tree
+def generate(ast):
+    ast = VariableTransform().transform(ast)
+    ast = CodeGen().transform(ast)
+    print vars+out
+    return vars+out
+    
