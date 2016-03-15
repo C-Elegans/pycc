@@ -1,0 +1,6 @@
+start: assign ;
+assign: 'int ' identifier '=' number ';' ;
+number: '[0-9]+' ;
+identifier: '\w+' ;
+SPACES: '[ \t]+' (%ignore) ;
+
