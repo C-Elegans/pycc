@@ -25,8 +25,8 @@ class CodeGen(STransformer):
     def assign(self, tree):
         global out
         print tree.tail
-        out += "lea rax,[rip+_"+tree.tail[0].tail[0].tail[0]+"]\n"
         out += "pop rbx\n"
+        out += "lea rax,[rip+_"+tree.tail[0].tail[0].tail[0]+"]\n"
         out += "mov [rax],ebx\n"
         return tree
     def expr(self,tree):
