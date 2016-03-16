@@ -21,6 +21,10 @@ class Expr(STransformer):
         global out
         out += "mov rax,[rip+_"+tree.tail[0]+"]\n"
         out += "push rax\n"
+    def add(self,tree):
+        global out
+        out += "pop rax\n"
+        out += "add [rsp], rax\n"
 class CodeGen(STransformer):
     def assign(self, tree):
         global out
