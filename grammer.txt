@@ -1,6 +1,6 @@
-start: assign ('\n' assign)* ;
-assign: (vardec|var) '=' expr ';' ;
-vardec: 'int ' identifier ;
+start: (assign|vardec) ';' ('\n' (assign|vardec) ';')* ;
+assign: (vardec|var) '=' expr  ;
+vardec: 'int ' identifier  ;
 var: identifier ;
 expr: (var|number|add|sub|mul|div) (expr)* ;
 add: (var|number) '\+' (var|number) ;
