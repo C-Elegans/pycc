@@ -1,16 +1,19 @@
 from peachpy import *
 from peachpy.x86_64 import *
 from plyplus import *
-out = ".text\n.globl start\nstart:\n"
+out = ".text\n.globl start\nstart:\nmov rbp,rsp\n"
 vars = ".intel_syntax noprefix\n.data\n"
 var_names = []
-
+var_offsets = {}
+sp_offset = 4
 class VariableTransform(STransformer):
     def vardec(self,tree):
         global vars
-        var_names.append(tree.tail[0].tail[0])
-        vars += "_"+tree.tail[0].tail[0]+":\n"
-        vars += ".int 0\n"
+        global sp_offset
+        name = tree.tail[0].tail[0]
+        var_names.append(name)
+        var_offsets[name] = sp_offset
+        sp_offset += 4
         tree.head = "var"
         return tree
 class Expr(STransformer):
@@ -19,7 +22,7 @@ class Expr(STransformer):
         out += "push "+tree.tail[0]+"\n"
     def identifier(self,tree):
         global out
-        out += "mov rax,[rip+_"+tree.tail[0]+"]\n"
+        out += "mov eax,[rbp+"+str(var_offsets[tree.tail[0]])+"]\n"
         out += "push rax\n"
     def add(self,tree):
         global out
@@ -51,8 +54,8 @@ class CodeGen(STransformer):
         global out
         print tree.tail
         out += "pop rbx\n"
-        out += "lea rax,[rip+_"+tree.tail[0].tail[0].tail[0]+"]\n"
-        out += "mov [rax],ebx\n"
+        
+        out += "mov [rbp+"+str(var_offsets[tree.tail[0].tail[0].tail[0]])+"],ebx\n"
         return tree
     def expr(self,tree):
         Expr().transform(tree)
@@ -62,6 +65,7 @@ class CodeGen(STransformer):
 def generate(ast):
     global out
     ast = VariableTransform().transform(ast)
+    out += "sub rsp,"+str((sp_offset+15)&~15)+"\n"
     print ast
     ast = CodeGen().transform(ast)
     for var in var_names:
@@ -71,9 +75,9 @@ def generate(ast):
 mov rax,2
 lea rdi,[rip+printf_string]
 mov rsi,'%c'
-mov rdx,[rip+_%s]
+mov rdx,[rbp+%s]
 call _printf
-""" % (var,var)
+""" % (var,var_offsets[var])
     out += """
 mov rax, 0x2000001
 mov rdi, 0

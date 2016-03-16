@@ -7,6 +7,6 @@ test.o:test.s
 test.s:test.c
 	python compiler.py test.c test.s	
 clean:
-	rm *.o
 	rm *.s
+	rm *.o
 	rm test
