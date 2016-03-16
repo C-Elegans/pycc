@@ -24,7 +24,28 @@ class Expr(STransformer):
     def add(self,tree):
         global out
         out += "pop rax\n"
-        out += "add [rsp], rax\n"
+        out += "pop rbx\n"
+        out += "add rbx, rax\n"
+        out += "push rbx\n"
+    def sub(self,tree):
+        global out
+        out += "pop rax\n"
+        out += "pop rbx\n"
+        out += "sub rbx, rax\n"
+        out += "push rbx\n"
+    def mul(self, tree):
+        global out
+        out += "pop rax\n"
+        out += "pop rbx\n"
+        out += "imul eax,ebx\n"
+        out += "push rax\n"
+    def div(self,tree):
+        global out
+        out += "pop rbx\n"
+        out += "pop rax\n"
+        out += "xor rdx,rdx\n"
+        out += "idiv rbx\n"
+        out += "push rax\n"
 class CodeGen(STransformer):
     def assign(self, tree):
         global out
