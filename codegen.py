@@ -79,7 +79,7 @@ class CodeGen(STransformer):
 def generate(ast):
     global out
     ast = VariableTransform().transform(ast)
-    out += "sub rsp,"+str((sp_offset+15)&~15)+"\n"
+    
     funcs = ast.select("funcdef")
     
     for func in funcs:
@@ -89,7 +89,8 @@ def generate(ast):
         out += "push rbp\nmov rbp,rsp\n"
         Expr().transform(func)
     ast.remove_kids_by_head("funcdef")
-    out += ".globl start\nstart:\nmov rbp,rsp\n"
+    out += ".globl start\nstart:\n"
+    out += "sub rsp,"+str((sp_offset+15)&~15)+"\nmov rbp,rsp\n"
     print ast
     ast = CodeGen().transform(ast)
     for var in var_names:
