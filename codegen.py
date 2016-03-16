@@ -17,9 +17,10 @@ class VariableTransform(STransformer):
         tree.head = "var"
         return tree
 class Expr(STransformer):
+    
     def funcdef(self,tree):
         global out
-        out += "ret\n"
+        out += "pop rbp\nret\n"
     def number(self,tree):
         global out
         out += "push "+tree.tail[0]+"\n"
@@ -56,6 +57,10 @@ class Expr(STransformer):
         global out
         print tree
         out += "call _" + tree.tail[0].tail[0] + "\n"
+        out += "push rax\n"
+    def ret(self,tree):
+        global out
+        out += "pop rax\n"
         
 class CodeGen(STransformer):
     def assign(self, tree):
@@ -69,6 +74,7 @@ class CodeGen(STransformer):
         Expr().transform(tree)
         return tree
     
+    
         
 def generate(ast):
     global out
@@ -80,6 +86,7 @@ def generate(ast):
         print func
         fname = func.tail[1].tail[0]
         out += ".globl %s\n_%s:\n" % (fname,fname)
+        out += "push rbp\nmov rbp,rsp\n"
         Expr().transform(func)
     ast.remove_kids_by_head("funcdef")
     out += ".globl start\nstart:\nmov rbp,rsp\n"
