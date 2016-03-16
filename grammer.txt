@@ -1,4 +1,5 @@
-start: (assign|vardec) ';' ('\n' (assign|vardec) ';')* ;
+start: (NEWLINE|statement|funcdef)+ ;
+statement: assign|var|func|vardec ;
 assign: (vardec|var) '=' expr  ;
 vardec: 'int ' identifier  ;
 var: identifier ;
@@ -7,7 +8,12 @@ add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;
 div: (var|number) '/' (var|number) ;
+funcdef: (ftype) (identifier) '\(' (vardec)* '\)' '{' (NEWLINE|statement)* '}' ;
+
+func: (identifier) '\(' '\)' ;
+
+ftype: 'void' ;
 number: '[0-9]+' ;
 identifier: '\w+' ;
-SPACES: '[ \t]+' (%ignore) ;
-
+SPACES: '[ \t;]+' (%ignore) ;
+NEWLINE: '(\r?\n[\t ]*)+' (%newline) ;

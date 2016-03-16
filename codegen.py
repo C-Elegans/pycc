@@ -20,9 +20,9 @@ class Expr(STransformer):
     def number(self,tree):
         global out
         out += "push "+tree.tail[0]+"\n"
-    def identifier(self,tree):
+    def var(self,tree):
         global out
-        out += "mov eax,[rbp+"+str(var_offsets[tree.tail[0]])+"]\n"
+        out += "mov eax,[rbp+"+str(var_offsets[tree.tail[0].tail[0]])+"]\n"
         out += "push rax\n"
     def add(self,tree):
         global out
