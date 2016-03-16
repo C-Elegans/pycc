@@ -11,7 +11,8 @@ class VariableTransform(STransformer):
         var_names.append(tree.tail[0].tail[0])
         vars += "_"+tree.tail[0].tail[0]+":\n"
         vars += ".int 0\n"
-        return tree.tail[0]
+        tree.head = "var"
+        return tree
 class Expr(STransformer):
     def number(self,tree):
         global out
@@ -23,9 +24,10 @@ class Expr(STransformer):
 class CodeGen(STransformer):
     def assign(self, tree):
         global out
-        out += "lea rax,[rip+_"+tree.tail[0].tail[0]+"]\n"
+        print tree.tail
+        out += "lea rax,[rip+_"+tree.tail[0].tail[0].tail[0]+"]\n"
         out += "pop rbx\n"
-        out += "mov [rax],rbx\n"
+        out += "mov [rax],ebx\n"
         return tree
     def expr(self,tree):
         Expr().transform(tree)
