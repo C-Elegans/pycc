@@ -1,9 +1,9 @@
 start: (NEWLINE|statement|funcdef)+ ;
-statement: assign|var|func|vardec ;
+statement: assign|var|vardec|expr ;
 assign: (vardec|var) '=' expr  ;
 vardec: 'int ' identifier  ;
 var: identifier ;
-expr: (var|number|add|sub|mul|div) (expr)* ;
+expr: (var|number|add|sub|mul|div|func) (expr)* ;
 add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;

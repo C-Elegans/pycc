@@ -18,8 +18,6 @@ class VariableTransform(STransformer):
         return tree
 class Expr(STransformer):
     def funcdef(self,tree):
-        print "funcdef!",
-        print tree
         global out
         out += "ret\n"
     def number(self,tree):
@@ -54,6 +52,11 @@ class Expr(STransformer):
         out += "xor rdx,rdx\n"
         out += "idiv rbx\n"
         out += "push rax\n"
+    def func(self,tree):
+        global out
+        print tree
+        out += "call _" + tree.tail[0].tail[0] + "\n"
+        
 class CodeGen(STransformer):
     def assign(self, tree):
         global out
@@ -65,7 +68,7 @@ class CodeGen(STransformer):
     def expr(self,tree):
         Expr().transform(tree)
         return tree
-
+    
         
 def generate(ast):
     global out
