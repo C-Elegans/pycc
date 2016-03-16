@@ -1,7 +1,7 @@
 from peachpy import *
 from peachpy.x86_64 import *
 from plyplus import *
-out = ".text\n.globl start\nstart:\nmov rbp,rsp\n"
+out = ".text\n"
 vars = ".intel_syntax noprefix\n.data\n"
 var_names = []
 var_offsets = {}
@@ -17,6 +17,11 @@ class VariableTransform(STransformer):
         tree.head = "var"
         return tree
 class Expr(STransformer):
+    def funcdef(self,tree):
+        print "funcdef!",
+        print tree
+        global out
+        out += "ret\n"
     def number(self,tree):
         global out
         out += "push "+tree.tail[0]+"\n"
@@ -66,6 +71,15 @@ def generate(ast):
     global out
     ast = VariableTransform().transform(ast)
     out += "sub rsp,"+str((sp_offset+15)&~15)+"\n"
+    funcs = ast.select("funcdef")
+    
+    for func in funcs:
+        print func
+        fname = func.tail[1].tail[0]
+        out += ".globl %s\n_%s:\n" % (fname,fname)
+        Expr().transform(func)
+    ast.remove_kids_by_head("funcdef")
+    out += ".globl start\nstart:\nmov rbp,rsp\n"
     print ast
     ast = CodeGen().transform(ast)
     for var in var_names:
