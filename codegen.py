@@ -58,7 +58,7 @@ class Expr(STransformer):
     def var(self,tree):
         global out
     
-        out += "mov eax,[rbp+"+str(current_function.variable_offsets[tree.tail[0].tail[0]])+"]\n"
+        out += "mov eax,[rbp-"+str(current_function.variable_offsets[tree.tail[0].tail[0]])+"]\n"
         out += "push rax\n"
     def add(self,tree):
         global out
@@ -90,16 +90,14 @@ class Expr(STransformer):
         print tree
         out += "call _" + tree.tail[0].tail[0] + "\n"
         out += "push rax\n"
-    def ret(self,tree):
-        global out
-        out += "pop rax\n"
+    
         
 class CodeGen(STransformer):
     def assign(self, tree):
         global out
         print tree.tail
         out += "pop rbx\n"
-        out += "mov [rbp+"+str(current_function.variable_offsets[tree.tail[0].tail[0].tail[0]])+"],ebx\n"
+        out += "mov [rbp-"+str(current_function.variable_offsets[tree.tail[0].tail[0].tail[0]])+"],ebx\n"
         return tree
     def funcdef(self,tree):
         current_function =functions[tree.tail[1].tail[0]]
@@ -109,10 +107,12 @@ class CodeGen(STransformer):
     def func(self, tree):
         global out
         out += "call _" + tree.tail[0].tail[0] + "\n"
-    def statement(self,tree):
+    def expr(self,tree):
         Expr().transform(tree)
         return tree
-    
+    def ret(self,tree):
+        global out
+        out += "pop rax\n"
     
     
         
