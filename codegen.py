@@ -7,15 +7,16 @@ current_function = None
 functions = {}
 global_functions= []
 class Function():
-    def __init__(self,name):
+    def __init__(self,name, ret):
         self.name = name
         self.variable_offsets = {}
         self.bp = 0
+        self.returns = ret
     def add_var(self,name):
         self.variable_offsets[name] = self.bp+4
         self.bp += 4
     def __repr__(self):
-        return str(self.name) +" vars: "+ str(self.variable_offsets)+ " size: " + str(self.bp)
+        return str(self.name) +"->"+self.returns+" vars: "+ str(self.variable_offsets)+ " size: " + str(self.bp)
 class VariableTransform(STransformer):
     def vardec(self,tree):
         if current_function:
@@ -41,7 +42,7 @@ class VarGen(STransformer):
         print "\n"
         print tree
         print "\n"
-        current_function = Function(tree.tail[1].tail[0])
+        current_function = Function(tree.tail[0].tail[0], tree.tail[1].tail[0])
         functions[current_function.name] = current_function
         tree = VariableTransform().transform(tree)
         sp_offset = 4
@@ -57,8 +58,11 @@ class Expr(STransformer):
         out += "push "+tree.tail[0]+"\n"
     def var(self,tree):
         global out
-    
-        out += "mov eax,[rbp-"+str(current_function.variable_offsets[tree.tail[0].tail[0]])+"]\n"
+        varname = tree.tail[0].tail[0]
+        if varname in current_function.variable_offsets:
+            out += "mov eax,[rbp-"+str(current_function.variable_offsets[varname])+"]\n"
+        else:
+            out += "mov eax,[rip+_"+varname+"]\n"
         out += "push rax\n"
     def add(self,tree):
         global out
@@ -95,12 +99,16 @@ class Expr(STransformer):
 class CodeGen(STransformer):
     def assign(self, tree):
         global out
-        print tree.tail
-        out += "pop rbx\n"
-        out += "mov [rbp-"+str(current_function.variable_offsets[tree.tail[0].tail[0].tail[0]])+"],ebx\n"
+        varname = tree.tail[0].tail[0].tail[0]
+        if varname in current_function.variable_offsets:
+            out += "pop rbx\n"
+            out += "mov [rbp-"+str(current_function.variable_offsets[varname])+"],ebx\n"
+        else:
+            out += "pop rbx\n"
+            out += "mov [rip+_"+varname+"],ebx\n"
         return tree
     def funcdef(self,tree):
-        current_function =functions[tree.tail[1].tail[0]]
+        current_function =functions[tree.tail[0].tail[0]]
         global out
         out += "mov rsp,rbp\npop rbp\nret\n"
         return tree
@@ -112,7 +120,11 @@ class CodeGen(STransformer):
         return tree
     def ret(self,tree):
         global out
-        out += "pop rax\n"
+        print current_function.returns != "void"
+        if current_function.returns != "void":
+            out += "pop rax\n"
+        else:
+            raise ValueError("Cannot return from a void function")
     
     
         
@@ -132,7 +144,7 @@ def generate(ast):
     for func in funcs:
         print func
         
-        fname = func.tail[1].tail[0]
+        fname = func.tail[0].tail[0]
         current_function = functions[fname]
         out += ".globl %s\n_%s:\n" % (fname,fname)
         out += "push rbp\nmov rbp,rsp\n"
