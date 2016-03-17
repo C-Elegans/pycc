@@ -6,15 +6,36 @@ vars = ".intel_syntax noprefix\n.data\n"
 var_names = []
 var_offsets = {}
 sp_offset = 4
+in_function = False
+function_vars = []
+function_offsets = []
+current_function = {}
+fname = ""
 class VariableTransform(STransformer):
     def vardec(self,tree):
         global vars
         global sp_offset
+        global current_function
         name = tree.tail[0].tail[0]
-        var_names.append(name)
-        var_offsets[name] = sp_offset
-        sp_offset += 4
+        if not in_function:
+            var_names.append(name)
+            var_offsets[name] = sp_offset
+            sp_offset += 4
+        else:
+            current_function[name] = sp_offset
+            sp_offset += 4
         tree.head = "var"
+        return tree
+        
+class VarGen(STransformer):
+    def funcdef(self,tree):
+        global in_function
+        global function_offsets
+        global sp_offset
+        in_function = True
+        tree = VariableTransform().transform(tree)
+        sp_offset = 4
+        in_function = False
         return tree
 class Expr(STransformer):
     
@@ -26,8 +47,9 @@ class Expr(STransformer):
         out += "push "+tree.tail[0]+"\n"
     def var(self,tree):
         global out
-        out += "mov eax,[rbp+"+str(var_offsets[tree.tail[0].tail[0]])+"]\n"
-        out += "push rax\n"
+        if not in_function:
+            out += "mov eax,[rbp+"+str(var_offsets[tree.tail[0].tail[0]])+"]\n"
+            out += "push rax\n"
     def add(self,tree):
         global out
         out += "pop rax\n"
@@ -70,6 +92,10 @@ class CodeGen(STransformer):
         
         out += "mov [rbp+"+str(var_offsets[tree.tail[0].tail[0].tail[0]])+"],ebx\n"
         return tree
+    def func(self, tree):
+        global out
+        out += "call _" + tree.tail[0].tail[0] + "\n"
+        
     def expr(self,tree):
         Expr().transform(tree)
         return tree
@@ -78,16 +104,21 @@ class CodeGen(STransformer):
         
 def generate(ast):
     global out
+    global in_function
+    ast = VarGen().transform(ast)
+    print ast
     ast = VariableTransform().transform(ast)
-    
+    print ast
     funcs = ast.select("funcdef")
     
     for func in funcs:
         print func
+        in_function = True
         fname = func.tail[1].tail[0]
         out += ".globl %s\n_%s:\n" % (fname,fname)
         out += "push rbp\nmov rbp,rsp\n"
         Expr().transform(func)
+    in_function = False
     ast.remove_kids_by_head("funcdef")
     out += ".globl start\nstart:\n"
     out += "sub rsp,"+str((sp_offset+15)&~15)+"\nmov rbp,rsp\n"

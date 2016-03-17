@@ -4,8 +4,9 @@ y=x
 x=3
 int z
 z= 10/3
-x= main()
+main()
 void main(){
+	int r=0
 	return 1
 }
 

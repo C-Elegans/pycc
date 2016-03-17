@@ -1,5 +1,5 @@
 start: (NEWLINE|statement|funcdef)+ ;
-statement: assign|var|vardec|expr|ret ;
+statement: assign|var|vardec|expr|ret|func ;
 assign: (vardec|var) '=' expr  ;
 vardec: 'int ' identifier  ;
 var: identifier ;
