@@ -5,7 +5,7 @@ out = ".text\n"
 vars = ".intel_syntax noprefix\n.data\n"
 current_function = None
 functions = {}
-global_functions= []
+global_vars= []
 class Function():
     def __init__(self,name, ret):
         self.name = name
@@ -26,11 +26,11 @@ class VariableTransform(STransformer):
         return tree
     def assign(self,tree):
         if not current_function:
-            global global_functions,out,vars
+            global global_vars,out,vars
             print tree
             name = tree.tail[0].tail[0].tail[0]
         
-            global_functions +=name
+            global_vars +=name
             vars += "_%s: .int %d\n" %(name, int(tree.tail[1].tail[0].tail[0]))
         return tree
         
@@ -61,8 +61,10 @@ class Expr(STransformer):
         varname = tree.tail[0].tail[0]
         if varname in current_function.variable_offsets:
             out += "mov eax,[rbp-"+str(current_function.variable_offsets[varname])+"]\n"
-        else:
+        elif varname in global_vars:
             out += "mov eax,[rip+_"+varname+"]\n"
+        else:
+            raise Exception("No variable named "+varname)
         out += "push rax\n"
     def add(self,tree):
         global out
@@ -98,14 +100,16 @@ class Expr(STransformer):
         
 class CodeGen(STransformer):
     def assign(self, tree):
-        global out
+        global out,global_vars
         varname = tree.tail[0].tail[0].tail[0]
         if varname in current_function.variable_offsets:
             out += "pop rbx\n"
             out += "mov [rbp-"+str(current_function.variable_offsets[varname])+"],ebx\n"
-        else:
+        elif varname in global_vars:
             out += "pop rbx\n"
             out += "mov [rip+_"+varname+"],ebx\n"
+        else:
+            raise Exception("No variable named "+varname)
         return tree
     def funcdef(self,tree):
         current_function =functions[tree.tail[0].tail[0]]
