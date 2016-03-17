@@ -155,13 +155,25 @@ def generate(ast):
         out += "sub rsp,"+str((current_function.bp+15)&~15) +"\n"
         
         CodeGen().transform(func)
-        
+    
+   
     out += """
 .globl start
 start:
 call _main
+"""
+    for var in global_vars:
+        out += """
+mov rax,2
+lea rdi,[rip+printf_string]
+mov rsi,'%c'
+mov rdx,[rip+_%s]
+call _printf
+""" % (var,var)
+    out += """
 mov rax, 0x2000001
 mov rdi, 0
 syscall
 """
+    out += 'printf_string: .asciz "%c: %d\\n"\n'
     return vars+out
