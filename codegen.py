@@ -129,7 +129,11 @@ def generate(ast):
     ast.remove_kids_by_head("funcdef")
     out += ".globl start\nstart:\n"
     out += "sub rsp,"+str((current_function.bp+15)&~15)+"\nmov rbp,rsp\n"
+    print "codegen"
     print ast
+    print functions
+    for name, offset in current_function.variable_offsets.iteritems():
+        print name
     ast = CodeGen().transform(ast)
     out += """
 mov rax, 0x2000001
