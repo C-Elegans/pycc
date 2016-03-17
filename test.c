@@ -1,7 +1,5 @@
-int x=0
+int y=0
 void main(){
-	int x=3
-	int r=5
-	x=r+3
+	int x=0
 	return 0
 }
