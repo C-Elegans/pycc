@@ -5,8 +5,6 @@ test() -> int{
 }
  main() -> int{
 	int x=1
-	
-	y= x==1
-	
+	y= x>=1
 	return 0
 }

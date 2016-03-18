@@ -1,19 +1,18 @@
 start: (NEWLINE|statement|funcdef)+ ;
 statement: assign|var|vardec|expr|ret|func ;
 funcdef: (identifier) '\(' (vardec)* '\)' '->' (ftype) '{' (NEWLINE|statement)* '}' ;
-assign: (vardec|var) '=' expr  ;
+assign: (vardec|var) '=' (expr)  ;
 
-vardec: 'int' identifier  ;
-var: identifier ;
-expr: (var|number|add|sub|mul|div|func|eq) (expr)* ;
+vardec: 'int' (identifier)  ;
+var: (identifier) ;
+expr: (var|number|add|sub|mul|func|gt|lt|eq|le|ge) (expr)* ;
 add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;
-div: (var|number) '/' (var|number) ;
-eq: (var|number) '==' (expr) ;
+div: (var|number) '\/' (var|number) ;
+gt: (expr) '>' (expr) ;
+
 ret: 'return' (expr) ;
-
-
 func: (identifier) '\(' '\)' ;
 
 ftype: 'void' | 'int' ;
@@ -21,3 +20,7 @@ number: '[0-9]+' ;
 identifier: '\w+' ;
 SPACES: '[ \t;]+' (%ignore) ;
 NEWLINE: '(\r?\n[\t ]*)+' (%newline) ;
+lt: (expr) '<' (expr) ;
+eq: (expr) '==' (expr) ;
+le: (expr) '<=' (expr) ;
+ge: (expr) '>=' (expr) ;

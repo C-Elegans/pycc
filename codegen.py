@@ -48,6 +48,14 @@ class VarGen(STransformer):
         sp_offset = 4
       
         return tree
+def condition(cond):
+    out =  "pop rbx\n"
+    out += "pop rax\n"
+    out += "xor rcx,rcx\n"
+    out += "cmp rax,rbx\n"
+    out += "set%s cl\n" % (cond)
+    out += "push rcx\n"
+    return out
 class Expr(STransformer):
     
     def funcdef(self,tree):
@@ -98,13 +106,19 @@ class Expr(STransformer):
         out += "push rax\n"
     def eq(self,tree):
         global out
-        out += "pop rax\n"
-        out += "pop rbx\n"
-        out += "xor rcx,rcx\n"
-        out += "cmp rax,rbx\n"
-        out += "sete cl\n"
-        out += "push rcx\n"
-        
+        out += condition("e")
+    def gt(delf,tree):
+        global out
+        out += condition("g")
+    def lt(delf,tree):
+        global out
+        out += condition("l")
+    def le(delf,tree):
+        global out
+        out += condition("le")  
+    def ge(delf,tree):
+        global out
+        out += condition("ge") 
 class CodeGen(STransformer):
     def assign(self, tree):
         global out,global_vars
