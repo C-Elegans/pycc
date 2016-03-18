@@ -64,7 +64,7 @@ class Expr(STransformer):
         elif varname in global_vars:
             out += "mov eax,[rip+_"+varname+"]\n"
         else:
-            raise Exception("No variable named "+varname)
+            raise SyntaxError("No variable named "+varname)
         out += "push rax\n"
     def add(self,tree):
         global out
@@ -109,7 +109,7 @@ class CodeGen(STransformer):
             out += "pop rbx\n"
             out += "mov [rip+_"+varname+"],ebx\n"
         else:
-            raise Exception("No variable named "+varname)
+            raise SyntaxError("No variable named "+varname)
         return tree
     def funcdef(self,tree):
         current_function =functions[tree.tail[0].tail[0]]
