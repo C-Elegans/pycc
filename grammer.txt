@@ -5,11 +5,12 @@ assign: (vardec|var) '=' expr  ;
 
 vardec: 'int' identifier  ;
 var: identifier ;
-expr: (var|number|add|sub|mul|div|func) (expr)* ;
+expr: (var|number|add|sub|mul|div|func|eq) (expr)* ;
 add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;
 div: (var|number) '/' (var|number) ;
+eq: (var|number) '==' (expr) ;
 ret: 'return' (expr) ;
 
 

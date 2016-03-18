@@ -93,10 +93,17 @@ class Expr(STransformer):
         out += "push rax\n"
     def func(self,tree):
         global out
-        print tree
+        
         out += "call _" + tree.tail[0].tail[0] + "\n"
         out += "push rax\n"
-    
+    def eq(self,tree):
+        global out
+        out += "pop rax\n"
+        out += "pop rbx\n"
+        out += "xor rcx,rcx\n"
+        out += "cmp rax,rbx\n"
+        out += "sete cl\n"
+        out += "push rcx\n"
         
 class CodeGen(STransformer):
     def assign(self, tree):
