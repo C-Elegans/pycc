@@ -1,6 +1,7 @@
 from peachpy import *
 from peachpy.x86_64 import *
 from plyplus import *
+blockid = 0
 out = ".text\n"
 vars = ".intel_syntax noprefix\n.data\n"
 current_function = None
@@ -107,18 +108,22 @@ class Expr(STransformer):
     def eq(self,tree):
         global out
         out += condition("e")
-    def gt(delf,tree):
+    def gt(self,tree):
         global out
         out += condition("g")
-    def lt(delf,tree):
+    def lt(self,tree):
         global out
         out += condition("l")
-    def le(delf,tree):
+    def le(self,tree):
         global out
         out += condition("le")  
-    def ge(delf,tree):
+    def ge(self,tree):
         global out
         out += condition("ge") 
+    def block(self,tree):
+        global out,blockid
+        out += "block_%d_end:\n" % (blockid)
+        blockid += 1
 class CodeGen(STransformer):
     def assign(self, tree):
         global out,global_vars
@@ -150,7 +155,17 @@ class CodeGen(STransformer):
             out += "pop rax\n"
         else:
             raise ValueError("Cannot return from a void function")
-    
+    def _if(self,tree):
+        global out,blockid
+        print tree
+        CodeGen().transform(tree.tail[0])
+        out += "cmp rax,0\nje block_%d_end\n" % (blockid)
+        out += "//if\n"
+        out += "block_%d_begin:\n" % (blockid)
+        CodeGen().transform(tree.tail[1].tail[0])
+        out += "block_%d_end:\n" % (blockid)
+        blockid += 1
+       
     
         
 def generate(ast):

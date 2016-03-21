@@ -1,30 +1,43 @@
 .intel_syntax noprefix
 .data
-_x:
-.int 0
-_y:
-.int 0
+_y: .int 0
 .text
+.globl test
+_test:
+push rbp
+mov rbp,rsp
+sub rsp,16
+mov DWORD PTR [rbp-4],1
+mov eax,[rbp-4]
+ 
+mov rsp,rbp
+pop rbp
+ret
+.globl main
+_main:
+push rbp
+mov rbp,rsp
+sub rsp,16
+mov DWORD PTR [rbp-4],1
+mov eax,[rbp-4]
+push rax
+mov DWORD PTR [rip+_y],1
+mov eax,[rbp-4]
+push rax
+cmp rax,0
+je block_0_end
+//if
+block_0_begin:
+mov DWORD PTR [rip+_y],1
+block_0_end:
+xor rax,rax
+mov rsp,rbp
+pop rbp
+ret
+
 .globl start
 start:
-push 2
-lea rax,[rip+x]
-pop rbx
-mov [rax],rbx
-push 3
-lea rax,[rip+y]
-pop rbx
-mov [rax],rbx
-
-        
-
-mov rax,2
-lea rdi,[rip+printf_string]
-mov rsi,'x'
-mov rdx,[rip+_x]
-call _printf
-
-        
+call _main
 
 mov rax,2
 lea rdi,[rip+printf_string]
