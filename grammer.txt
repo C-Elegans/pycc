@@ -1,6 +1,6 @@
 start: (NEWLINE|statement|funcdef)+ ;
 identifier: NAME;
-statement: assign|var|vardec|expr|ret|func|_if|_while ;
+statement: assign|var|vardec|expr|ret|func|_if|_while|_print ;
 funcdef: (identifier) '\(' (vardec)* '\)' RET (ftype) (block) ;
 assign: (vardec|var) '=' (expr)  ;
 
@@ -20,6 +20,7 @@ ftype: 'void' | INT ;
 number: '[0-9]+' ;
 SPACES: '[ \t;]+' (%ignore) ;
 NEWLINE: '(\r?\n[\t ]*)+' (%newline) ;
+_print: PRINT (var) ;
 lt: (number|var) '<' (number|var) ;
 eq: (number|var) '==' (number|var) ;
 le: (number|var) '<=' (number|var) ;
@@ -33,4 +34,5 @@ IF: 'if';
 RET: '->';
 RETURN: 'return' ;
 WHILE: 'while' ;
+PRINT: 'print' ;
 ) ;

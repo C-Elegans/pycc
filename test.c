@@ -6,9 +6,10 @@ test() -> int{
 }
 main() -> int{
 	int x=0
-	while(x<5){
+	while(x<15){
 		y+=2
 		x++
+		print y
 	}
 	return 0
 }

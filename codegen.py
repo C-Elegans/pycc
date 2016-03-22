@@ -136,6 +136,23 @@ class CodeGen(STransformer):
         else:
             raise SyntaxError("No variable named "+varname)
         return tree
+    def _print(self,tree):
+        global out
+        print tree
+        var = ""
+        varname = tree.tail[0].tail[0].tail[0]
+        if varname in current_function.variable_offsets:
+            
+            var += "[rbp-"+str(current_function.variable_offsets[varname])+"]\n"
+        elif varname in global_vars:
+            var += "[rip+_"+varname+"]\n"
+        print varname
+        out += """
+mov rax,1
+lea rdi,[rip+print_string]
+mov rsi,%s
+call _printf
+        """ % (var)
     def funcdef(self,tree):
         current_function =functions[tree.tail[0].tail[0]]
         global out
@@ -231,4 +248,5 @@ mov rdi, 0
 syscall
 """
     out += 'printf_string: .asciz "%c: %d\\n"\n'
+    out += 'print_string: .asciz "%d\\n"\n'
     return vars+out
