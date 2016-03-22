@@ -4,8 +4,8 @@ test() -> int{
 	return r
 }
  main() -> int{
-	int x=1
-	if(x) {
+	int x=0
+	if(x==1) {
 	 y=3
 	}
 	return 0

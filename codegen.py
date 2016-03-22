@@ -155,17 +155,19 @@ class CodeGen(STransformer):
             out += "pop rax\n"
         else:
             raise ValueError("Cannot return from a void function")
-    def _if(self,tree):
-        global out,blockid
-        print tree
-        CodeGen().transform(tree.tail[0])
-        out += "cmp rax,0\nje block_%d_end\n" % (blockid)
-        out += "//if\n"
-        out += "block_%d_begin:\n" % (blockid)
-        CodeGen().transform(tree.tail[1].tail[0])
-        out += "block_%d_end:\n" % (blockid)
-        blockid += 1
-       
+    def ifbegin(self,tree):
+        global out
+        
+        print tree.tail[0].tail[0]
+        out += "//ifbegin\n"
+        out += "if_begin_%s:\n" % (tree.tail[0].tail[0])
+        out += "pop rax\n"
+        out += "cmp rax,0\n"
+        out += "je if_end_%s\n" % (tree.tail[0].tail[0])
+    def ifend(self,tree):
+        global out
+        out += "//ifend\n"
+        out += "if_end_%s:\n" % (tree.tail[0].tail[0])
     
         
 def generate(ast):
