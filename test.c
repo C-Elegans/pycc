@@ -6,7 +6,7 @@ test() -> int{
 main() -> int{
 	int x=0
 	while(x<5){
-		y=y+2
+		y+=2
 		x++
 	}
 	return 0

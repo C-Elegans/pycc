@@ -161,7 +161,7 @@ class CodeGen(STransformer):
         out += "//ifbegin\n"
         out += "if_begin_%s:\n" % (tree.tail[0].tail[0])
         out += "pop rax\n"
-        out += "cmp rax,0\n"
+        out += "cmp eax,0\n"
         out += "je if_end_%s\n" % (tree.tail[0].tail[0])
     def ifend(self,tree):
         global out
@@ -177,7 +177,7 @@ class CodeGen(STransformer):
         
         out += "//test\n"
         out += "pop rax\n"
-        out += "cmp rax,0\n"
+        out += "cmp eax,0\n"
         out += "je while_end_%s\n" % (tree.tail[0].tail[0])
     def whileend(self,tree):
         global out

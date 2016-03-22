@@ -34,3 +34,9 @@ class TTransformer(STransformer):
         assign = strees.STree("assign",[var,strees.STree("expr",[strees.STree("add",[var,strees.STree("number",["1"])])])])
         print assign.pretty()
         return assign
+    def dec(self,tree):
+        print tree
+        var = tree.tail[0]
+        assign = strees.STree("assign",[var,strees.STree("expr",[strees.STree("sub",[var,strees.STree("number",["1"])])])])
+        print assign.pretty()
+        return assign
