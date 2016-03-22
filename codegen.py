@@ -28,7 +28,7 @@ class VariableTransform(STransformer):
     def assign(self,tree):
         if not current_function:
             global global_vars,out,vars
-            print tree
+            
             name = tree.tail[0].tail[0].tail[0]
         
             global_vars +=name
@@ -40,9 +40,7 @@ class VarGen(STransformer):
     def funcdef(self,tree):
         global current_function
         global functions
-        print "\n"
-        print tree
-        print "\n"
+        
         current_function = Function(tree.tail[0].tail[0], tree.tail[1].tail[0])
         functions[current_function.name] = current_function
         tree = VariableTransform().transform(tree)
@@ -146,12 +144,12 @@ class CodeGen(STransformer):
         global out
         out += "call _" + tree.tail[0].tail[0] + "\n"
     def expr(self,tree):
-        print tree.tail[0]
+        
         Expr().transform(tree)
         return tree
     def ret(self,tree):
         global out
-        print current_function.returns != "void"
+        
         if current_function.returns != "void":
             out += "pop rax\n"
         else:
@@ -159,7 +157,7 @@ class CodeGen(STransformer):
     def ifbegin(self,tree):
         global out
         
-        print tree.tail[0].tail[0]
+        
         out += "//ifbegin\n"
         out += "if_begin_%s:\n" % (tree.tail[0].tail[0])
         out += "pop rax\n"
@@ -171,7 +169,7 @@ class CodeGen(STransformer):
         out += "if_end_%s:\n" % (tree.tail[0].tail[0])
     def whilebegin(self,tree):
         global out
-        print tree.tail[0].tail[0]
+        
         out += "//whilebegin\n"
         out += "while_begin_%s:\n" % (tree.tail[0].tail[0])
     def whiletest(self,tree):
