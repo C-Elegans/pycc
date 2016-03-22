@@ -1,4 +1,5 @@
 int y = 0
+int blah = 4
 test() -> int{
 	int r=1
 	return r

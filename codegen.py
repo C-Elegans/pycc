@@ -30,8 +30,9 @@ class VariableTransform(STransformer):
             global global_vars,out,vars
             
             name = tree.tail[0].tail[0].tail[0]
-        
-            global_vars +=name
+            print name
+            global_vars.append(name)
+            print global_vars
             vars += "_%s: .int %d\n" %(name, int(tree.tail[1].tail[0].tail[0]))
         return tree
         
@@ -215,6 +216,7 @@ def generate(ast):
 start:
 call _main
 """
+    
     for var in global_vars:
         out += """
 mov rax,2
@@ -222,7 +224,7 @@ lea rdi,[rip+printf_string]
 mov rsi,'%c'
 mov rdx,[rip+_%s]
 call _printf
-""" % (var,var)
+""" % (var[0],var)
     out += """
 mov rax, 0x2000001
 mov rdi, 0
