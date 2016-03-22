@@ -3,10 +3,11 @@ test() -> int{
 	int r=1
 	return r
 }
- main() -> int{
+main() -> int{
 	int x=0
-	if(x==1) {
-	 y=3
+	while(x<5){
+		y=y+2
+		x=x+1
 	}
 	return 0
 }

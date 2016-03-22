@@ -16,3 +16,16 @@ class TTransformer(STransformer):
         print end
         tree = strees.STree("statement",[beg,end])
         return tree
+    def _while(self,tree):
+        print tree.tail[0]
+        id = strees.STree("id",[str(self.if_id)])
+        self.if_id += 1
+        beg = strees.STree("whilebegin",[id])
+        test= strees.STree("whiletest",[id,tree.tail[0]])
+        l = tree.tail[1:]
+        l.insert(0,id)
+        end=strees.STree("whileend",l)
+        print end
+        tree = strees.STree("statement",[beg,test,end])
+        return tree
+    
