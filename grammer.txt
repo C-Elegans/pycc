@@ -6,7 +6,7 @@ assign: (vardec|var) '=' (expr)  ;
 
 vardec: INT (identifier)  ;
 var: (identifier) ;
-expr: (var|number|add|sub|mul|func|gt|lt|eq|le|ge|inc|dec) (expr)* ;
+expr: (var|number|add|sub|mul|func|gt|lt|eq|le|ge) (expr)* ;
 add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;
@@ -18,8 +18,6 @@ func: (identifier) '\(' '\)' ;
 
 ftype: 'void' | INT ;
 number: '[0-9]+' ;
-inc: (var) '\+\+' ;
-dec: (var) '\-\-' ;
 SPACES: '[ \t;]+' (%ignore) ;
 NEWLINE: '(\r?\n[\t ]*)+' (%newline) ;
 lt: (number|var) '<' (number|var) ;

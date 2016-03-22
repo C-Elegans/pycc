@@ -28,15 +28,4 @@ class TTransformer(STransformer):
         print end
         tree = strees.STree("statement",[beg,test,end])
         return tree
-    def inc(self,tree):
-        print tree
-        var = tree.tail[0]
-        assign = strees.STree("assign",[var,strees.STree("expr",[strees.STree("add",[var,strees.STree("number",["1"])])])])
-        print assign.pretty()
-        return assign
-    def dec(self,tree):
-        print tree
-        var = tree.tail[0]
-        assign = strees.STree("assign",[var,strees.STree("expr",[strees.STree("sub",[var,strees.STree("number",["1"])])])])
-        print assign.pretty()
-        return assign
+    
