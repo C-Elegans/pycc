@@ -6,12 +6,16 @@ assign: (vardec|var) '=' (expr)  ;
 
 vardec: INT (identifier)  ;
 var: (identifier) ;
-expr: (var|number|add|sub|mul|func|gt|lt|eq|le|ge) (expr)* ;
+expr: (var|number|add|sub|mul|_and|_or|_xor|invert|div|func|gt|lt|eq|le|ge|ne) (expr)* ;
 add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;
 div: (var|number) '\/' (var|number) ;
-gt: (expr) '>' (expr) ;
+_and: (var|number) '&' (var|number) ;
+_or: (var|number) '\|' (var|number) ;
+_xor: (var|number) '\^' (var|number) ;
+invert: '\~' (var|number) ;
+gt: (var|number) '>' (var|number) ;
 block: '{' (statement|NEWLINE)+ '}' ;
 ret: RETURN (expr) ;
 func: (identifier) '\(' '\)' ;
@@ -25,6 +29,7 @@ lt: (number|var) '<' (number|var) ;
 eq: (number|var) '==' (number|var) ;
 le: (number|var) '<=' (number|var) ;
 ge: (number|var) '>=' (number|var) ;
+ne: (number|var) '!=' (number|var) ;
 _if: IF '\(' (expr) '\)' (block); 
 _while: WHILE '\(' (expr) '\)' (block) ;
 NAME: '[a-zA-Z_][a-zA-Z_0-9]*' (%unless 

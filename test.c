@@ -7,7 +7,9 @@ test() -> int{
 main() -> int{
 	int x=0
 	while(x<15){
-		y+=2
+		y=x
+		y=~y
+	
 		x++
 		print y
 	}

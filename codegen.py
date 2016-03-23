@@ -90,14 +90,37 @@ class Expr(STransformer):
         global out
         out += "pop rax\n"
         out += "pop rbx\n"
-        out += "imul eax,ebx\n"
+        out += "imul eax, ebx\n"
         out += "push rax\n"
     def div(self,tree):
         global out
         out += "pop rbx\n"
         out += "pop rax\n"
-        out += "xor rdx,rdx\n"
+        out += "xor rdx, rdx\n"
         out += "idiv rbx\n"
+        out += "push rax\n"
+    def _and(self,tree):
+        global out
+        out += "pop rax\n"
+        out += "pop rbx\n"
+        out += "and rbx, rax\n"
+        out += "push rbx\n"
+    def _or(self,tree):
+        global out
+        out += "pop rax\n"
+        out += "pop rbx\n"
+        out += "or rbx, rax\n"
+        out += "push rbx\n"
+    def _xor(self,tree):
+        global out
+        out += "pop rax\n"
+        out += "pop rbx\n"
+        out += "xor rbx, rax\n"
+        out += "push rbx\n"
+    def invert(self,tree):
+        global out
+        out += "pop rax\n"
+        out += "not rax\n"
         out += "push rax\n"
     def func(self,tree):
         global out
@@ -118,7 +141,10 @@ class Expr(STransformer):
         out += condition("le")  
     def ge(self,tree):
         global out
-        out += condition("ge") 
+        out += condition("ge")
+    def ne(self,tree):
+        global out
+        out += condition("ne")  
     def block(self,tree):
         global out,blockid
         out += "block_%d_end:\n" % (blockid)
@@ -152,7 +178,7 @@ mov rax,1
 lea rdi,[rip+print_string]
 mov rsi,%s
 call _printf
-        """ % (var)
+""" % (var)
     def funcdef(self,tree):
         current_function =functions[tree.tail[0].tail[0]]
         global out
