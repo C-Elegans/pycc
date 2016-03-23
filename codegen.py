@@ -143,9 +143,9 @@ class CodeGen(STransformer):
         varname = tree.tail[0].tail[0].tail[0]
         if varname in current_function.variable_offsets:
             
-            var += "[rbp-"+str(current_function.variable_offsets[varname])+"]\n"
+            var += "[rbp-"+str(current_function.variable_offsets[varname])+"]"
         elif varname in global_vars:
-            var += "[rip+_"+varname+"]\n"
+            var += "[rip+_"+varname+"]"
         print varname
         out += """
 mov rax,1
@@ -176,30 +176,29 @@ call _printf
         global out
         
         
-        out += "//ifbegin\n"
         out += "if_begin_%s:\n" % (tree.tail[0].tail[0])
         out += "pop rax\n"
         out += "cmp eax,0\n"
         out += "je if_end_%s\n" % (tree.tail[0].tail[0])
     def ifend(self,tree):
         global out
-        out += "//ifend\n"
+        
         out += "if_end_%s:\n" % (tree.tail[0].tail[0])
     def whilebegin(self,tree):
         global out
         
-        out += "//whilebegin\n"
+        
         out += "while_begin_%s:\n" % (tree.tail[0].tail[0])
     def whiletest(self,tree):
         global out
         
-        out += "//test\n"
+        
         out += "pop rax\n"
         out += "cmp eax,0\n"
         out += "je while_end_%s\n" % (tree.tail[0].tail[0])
     def whileend(self,tree):
         global out
-        out += "//whileend\n"
+        
         out += "jmp while_begin_%s\n" % (tree.tail[0].tail[0])
         out += "while_end_%s:\n" % (tree.tail[0].tail[0])
         

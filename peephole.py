@@ -12,11 +12,22 @@ passes.append((re.compile(r'mov r(.*),0'),r'xor r\1,r\1'))
 passes.append((re.compile(r'mov e(.*),\[(.*)\]\nmov r(.*),r\1', re.MULTILINE),r'mov e\3,[\2]'))
 passes.append((re.compile(r'mov r(.*),(\d)\n(add|sub) r(.*), r\1', re.MULTILINE),r'\3 r\4,\2'))
 passes.append((re.compile(r'mov e(.*),\[(.*)\]\n(add|sub) r\1,(.*)\nmov \[\2\],e\1', re.MULTILINE),r'\3 DWORD PTR [\2],\4'))
+passes.append((re.compile(r'mov r(.*),r(.*)\ncmp e\1,(.*)', re.MULTILINE),r'cmp e\2,\3'))
+passes.append((re.compile(r'xor rcx,rcx\ncmp (.*),(.*)\nset(.*) cl\ncmp ecx,0\nje (.*)', re.MULTILINE),r'cmp \1,\2\nj\3 \4 //reverse'))
 print passes
+conditionsdict = {"l":"ge","g":"le","e":"ne","ne":"e","le":"g","ge":"l"}
+condreverse = re.compile(r'j(.*) (.*)[ ]+//reverse')
 def optimize(text):
     global passes
     for p in passes:
     
         text = re.sub(p[0],p[1],text)
-        
-    return text
+    lines = text.splitlines()
+    for i,s in enumerate(lines):
+        match = condreverse.match(s)
+        if match:
+            cond =  conditionsdict[match.group(1)]
+            target = match.group(2)
+            lines[i] = "j%s %s" % (cond,target)
+            
+    return "\n".join(lines)
