@@ -1,5 +1,4 @@
 int y = 0
-int blah = 4
 test() -> int{
 	int r=1
 	return r
@@ -7,10 +6,10 @@ test() -> int{
 main() -> int{
 	int x=0
 	while(x<15){
-		y=x
-		y=~y
+		
+		y=x%5
 	
-		x++
+		x+=1
 		print y
 	}
 	return 0

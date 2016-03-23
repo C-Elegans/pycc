@@ -6,11 +6,12 @@ assign: (vardec|var) '=' (expr)  ;
 
 vardec: INT (identifier)  ;
 var: (identifier) ;
-expr: (var|number|add|sub|mul|_and|_or|_xor|invert|div|func|gt|lt|eq|le|ge|ne) (expr)* ;
+expr: (var|number|add|sub|mul|mod|_and|_or|_xor|invert|div|func|gt|lt|eq|le|ge|ne) (expr)* ;
 add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;
 div: (var|number) '\/' (var|number) ;
+mod: (var|number) '%' (var|number) ;
 _and: (var|number) '&' (var|number) ;
 _or: (var|number) '\|' (var|number) ;
 _xor: (var|number) '\^' (var|number) ;

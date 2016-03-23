@@ -92,6 +92,13 @@ class Expr(STransformer):
         out += "pop rbx\n"
         out += "imul eax, ebx\n"
         out += "push rax\n"
+    def mod(self,tree):
+        global out
+        out += "pop rbx\n"
+        out += "pop rax\n"
+        out += "xor rdx, rdx\n"
+        out += "idiv rbx\n"
+        out += "push rdx\n"
     def div(self,tree):
         global out
         out += "pop rbx\n"
