@@ -5,12 +5,10 @@ test() -> int{
 }
 main() -> int{
 	int x=0
-	while(x<15){
-		
-		y=x%5
-	
-		x+=1
-		print y
+	for(int i=3;i<20;i++) {
+		print i*5
 	}
+	
+	
 	return 0
 }

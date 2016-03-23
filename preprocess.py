@@ -1,7 +1,7 @@
 import re
 passes = []
-passes.append((re.compile(r'([ \t]*)(.*)\+\+'),r'\1\2=\2+1'))
-passes.append((re.compile(r'([ \t]*)(.*)--'),r'\1\2=\2-1'))
+passes.append((re.compile(r'([ \t]*)(\w[\w\d]*)\+\+'),r'\1\2=\2+1'))
+passes.append((re.compile(r'([ \t]*)(\w[\w\d]*)--'),r'\1\2=\2-1'))
 passes.append((re.compile(r'([ \t]*)(.*)(\+|-|\*|\/)=(.*)'),r'\1\2=\2\3\4'))
 
 def process(text):
