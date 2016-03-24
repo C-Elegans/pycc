@@ -1,12 +1,12 @@
 start: (NEWLINE|statement|funcdef)+ ;
 identifier: NAME;
 statement: assign|var|vardec|expr|ret|func|_if|_while|_print|_for ;
-funcdef: (identifier) '\(' (vardec)* '\)' RET (ftype) (block) ;
+funcdef: (identifier) '\(' funcparams? '\)' RET (ftype) (block) ;
+funcparams: (vardec)? (',' vardec)* ;
 assign: (vardec|var) '=' (expr)  ;
-
 vardec: INT (identifier)  ;
 var: (identifier) ;
-expr: (var|number|add|sub|mul|mod|_and|_or|_xor|invert|div|func|gt|lt|eq|le|ge|ne) (expr)* ;
+expr: (var|number|arith|func|cmp) (expr)* ;
 add: (var|number) '\+' (var|number) ;
 sub: (var|number) '\-' (var|number) ;
 mul: (var|number) '\*' (var|number) ;
@@ -16,7 +16,15 @@ _and: (var|number) '&' (var|number) ;
 _or: (var|number) '\|' (var|number) ;
 _xor: (var|number) '\^' (var|number) ;
 invert: '\~' (var|number) ;
+@arith: add|sub|mul|div|mod|_and|_or|_xor|invert ;
+lt: (number|var) '<' (number|var) ;
 gt: (var|number) '>' (var|number) ;
+eq: (number|var) '==' (number|var) ;
+le: (number|var) '<=' (number|var) ;
+ge: (number|var) '>=' (number|var) ;
+ne: (number|var) '!=' (number|var) ;
+@cmp: lt|gt|eq|le|ge|ne ;
+
 block: '{' (statement|NEWLINE)+ '}' ;
 ret: RETURN (expr) ;
 func: (identifier) '\(' '\)' ;
@@ -26,11 +34,7 @@ number: '[0-9]+' ;
 SPACES: '[ \t]+' (%ignore) ;
 NEWLINE: '(\r?\n[\t ]*)+' (%newline) ;
 _print: PRINT (expr) ;
-lt: (number|var) '<' (number|var) ;
-eq: (number|var) '==' (number|var) ;
-le: (number|var) '<=' (number|var) ;
-ge: (number|var) '>=' (number|var) ;
-ne: (number|var) '!=' (number|var) ;
+
 _if: IF '\(' (expr) '\)' (block); 
 _while: WHILE '\(' (expr) '\)' (block) ;
 _for: FOR '\(' (statement) ';' (expr) ';' (statement)  '\)' (block) ;

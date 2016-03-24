@@ -7,17 +7,20 @@ vars = ".intel_syntax noprefix\n.data\n"
 current_function = None
 functions = {}
 global_vars= []
+registers = ["rdi","rsi","rdx","rcx","r8","r9"]
 class Function():
-    def __init__(self,name, ret):
+    def __init__(self,name, ret,params,parnames):
         self.name = name
         self.variable_offsets = {}
         self.bp = 0
+        self.params = params
         self.returns = ret
+        self.parnames = parnames
     def add_var(self,name):
         self.variable_offsets[name] = self.bp+4
         self.bp += 4
     def __repr__(self):
-        return str(self.name) +"->"+self.returns+" vars: "+ str(self.variable_offsets)+ " size: " + str(self.bp)
+        return str(self.name)+"("+str(self.parnames) +")" +"->"+self.returns+" vars: "+ str(self.variable_offsets)+ " size: " + str(self.bp)
 class VariableTransform(STransformer):
     def vardec(self,tree):
         if current_function:
@@ -41,8 +44,12 @@ class VarGen(STransformer):
     def funcdef(self,tree):
         global current_function
         global functions
-        
-        current_function = Function(tree.tail[0].tail[0], tree.tail[1].tail[0])
+        print len(tree.tail)
+        if len(tree.tail) == 3:
+            current_function = Function(tree.tail[0].tail[0], tree.tail[-2].tail[0],0,None)
+        else: 
+            parnames = [x.tail[0].tail[0] for x in tree.tail[1].tail]
+            current_function = Function(tree.tail[0].tail[0], tree.tail[-2].tail[0],len(tree.tail[1].tail),parnames)
         functions[current_function.name] = current_function
         tree = VariableTransform().transform(tree)
         sp_offset = 4
@@ -247,6 +254,12 @@ def generate(ast):
         out += "push rbp\nmov rbp,rsp\n"
         out += "sub rsp,"+str((current_function.bp+15)&~15) +"\n"
         
+        if current_function.parnames:
+            
+            for i,name in enumerate(current_function.parnames):
+                print name
+                print registers[i]
+                out += "mov [rbp-"+str(current_function.variable_offsets[name])+"],"+registers[i]+"\n"
         CodeGen().transform(func)
     
    

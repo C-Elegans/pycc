@@ -14,6 +14,7 @@ passes.append((re.compile(r'mov r(.*),(\d)\n(add|sub|and|or) r(.*), r\1', re.MUL
 passes.append((re.compile(r'mov e(.*),\[(.*)\]\n(add|sub|and|or) r\1,(.*)\nmov \[\2\],e\1', re.MULTILINE),r'\3 DWORD PTR [\2],\4'))
 passes.append((re.compile(r'mov r(.*),r(.*)\ncmp e\1,(.*)', re.MULTILINE),r'cmp e\2,\3'))
 passes.append((re.compile(r'xor rcx,rcx\ncmp (.*),(.*)\nset(.*) cl\ncmp ecx,0\nje (.*)', re.MULTILINE),r'cmp \1,\2\nj\3 \4 //reverse'))
+
 print passes
 conditionsdict = {"l":"ge","g":"le","e":"ne","ne":"e","le":"g","ge":"l"}
 condreverse = re.compile(r'j(.*) (.*)[ ]+//reverse')

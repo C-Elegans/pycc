@@ -1,12 +1,10 @@
-int y = 0
-test() -> int{
-	int r=1
-	return r
+test(int x)-> int{
+	print x
 }
-main() -> int{
+main(int r, int g) -> int{
 	int x=0
-	for(int i=3;i<20;i++) {
-		print i*5
+	for(int i=0;i<=20;i++) {
+		test(i)
 	}
 	
 	
