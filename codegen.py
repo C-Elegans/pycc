@@ -7,7 +7,8 @@ vars = ".intel_syntax noprefix\n.data\n"
 current_function = None
 functions = {}
 global_vars= []
-registers = ["rdi","rsi","rdx","rcx","r8","r9"]
+registers_32 = ["edi","esi","edx","ecx","r8d","r9d"]
+registers_64 = ["rdi","rsi","rdx","rcx","r8","r9"]
 class Function():
     def __init__(self,name, ret,params,parnames):
         self.name = name
@@ -139,6 +140,7 @@ class Expr(STransformer):
     def func(self,tree):
         global out
         
+        
         out += "call _" + tree.tail[0].tail[0] + "\n"
         out += "push rax\n"
     def eq(self,tree):
@@ -190,6 +192,13 @@ call _printf
         return tree
     def func(self, tree):
         global out
+        func = functions[tree.tail[0].tail[0]]
+        if func.params > 0:
+            if func.params >6:
+                raise SyntaxError("Too many parameters")
+            for i in range(0,func.params):
+                print registers_64[func.params-i-1]
+                out +="pop %s\n" % (registers_64[func.params-i-1])
         out += "call _" + tree.tail[0].tail[0] + "\n"
     def expr(self,tree):
         
@@ -258,8 +267,8 @@ def generate(ast):
             
             for i,name in enumerate(current_function.parnames):
                 print name
-                print registers[i]
-                out += "mov [rbp-"+str(current_function.variable_offsets[name])+"],"+registers[i]+"\n"
+                print registers_64[i]
+                out += "mov [rbp-"+str(current_function.variable_offsets[name])+"],"+registers_32[i]+"\n"
         CodeGen().transform(func)
     
    

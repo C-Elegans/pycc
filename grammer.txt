@@ -27,7 +27,7 @@ ne: (number|var) '!=' (number|var) ;
 
 block: '{' (statement|NEWLINE)+ '}' ;
 ret: RETURN (expr) ;
-func: (identifier) '\(' '\)' ;
+func: (identifier) '\('(expr)? (',' expr)* '\)' ;
 
 ftype: 'void' | INT ;
 number: '[0-9]+' ;
