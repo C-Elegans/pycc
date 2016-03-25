@@ -9,9 +9,7 @@ def run(file):
     name = os.path.splitext(file)[0]
     
     p = subprocess.Popen("test/"+name, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    print p.stdout.readlines()
-    output = p.wait()
-    print p.stdout.readlines()
+    output = p.stdout.read()
     print output
     return output
 tests = open("tests.list","r").readlines()
@@ -22,7 +20,17 @@ for line in tests:
         print tokens[0]
         compile_test(tokens[0])
         o=run(tokens[0])
-        print type(o)
+        output = o.splitlines()
+        if len(tokens) != len(output) + 1:
+            raise ValueError("output does not match test case")
+        for i,line in enumerate(output):
+            
+            if tokens[i+1] != line:
+                raise ValueError("output does not match test case")
+    name = os.path.splitext(tokens[0])[0]
+    os.system("rm test/%s.s"%(name))
+print "All %d tests passed!" % (len(tests))
+        
 
     
     
