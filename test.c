@@ -1,10 +1,12 @@
+
 test(int x)-> int{
-	print x
+	return x*4
 }
-main(int r, int g) -> int{
+main() -> int{
 	int x=0
 	for(int i=0;i<=20;i++) {
-		test(i)
+		x=test(i)
+		print 1
 	}
 	
 	

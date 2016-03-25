@@ -200,6 +200,7 @@ call _printf
                 print registers_64[func.params-i-1]
                 out +="pop %s\n" % (registers_64[func.params-i-1])
         out += "call _" + tree.tail[0].tail[0] + "\n"
+        out += "push rax\n"
     def expr(self,tree):
         
         Expr().transform(tree)
@@ -275,6 +276,7 @@ def generate(ast):
     out += """
 .globl start
 start:
+
 call _main
 """
     
