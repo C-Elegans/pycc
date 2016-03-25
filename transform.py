@@ -1,9 +1,27 @@
 from plyplus import *
 from plyplus.strees import *
+func_params = {}
 def transform(tree):
     tree = TTransformer().transform(tree)
+    functions = tree.select("funcdef")
+    for func in functions:
+        name = func.tail[0].tail[0]
+        print name
+        params = len(func.select("funcparams"))
+        print params
+        func_params[name] = params
+    FunctionT().transform(tree)
     return tree
-    
+class FunctionT(STransformer):
+    def func(self,tree):
+        print tree.tail
+        name = tree.tail[0].tail[0]
+        params = len(tree.tail)-1
+        if not (name in func_params):
+            raise SyntaxError("Function %s not defined" % (name))
+        if params != func_params[name]:
+            raise SyntaxError("Function %s expects %d parameter(s). Found: %d" % (name,func_params[name], params))
+        
 class TTransformer(STransformer):
     if_id = 0
     def _if(self,tree):
