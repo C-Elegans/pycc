@@ -289,8 +289,9 @@ mov rdx,[rip+_%s]
 call _printf
 """ % (var[0],var)
     out += """
+mov rdi, rax
 mov rax, 0x2000001
-mov rdi, 0
+
 syscall
 """
     out += 'printf_string: .asciz "%c: %d\\n"\n'

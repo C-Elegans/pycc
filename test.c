@@ -5,7 +5,7 @@ test(int x)-> int{
 main() -> int{
 	int x=0
 	for(int i=0;i<=20;i++) {
-		
+		x=x+i
 		print test(i)
 	}
 	
