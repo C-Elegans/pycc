@@ -3,7 +3,7 @@ from peachpy.x86_64 import *
 from plyplus import *
 blockid = 0
 out = ".text\n"
-vars = ".intel_syntax noprefix\n.data\n"
+vars = ".intel_syntax noprefix\n.data\nfile_ptr: .skip 8,0\n"
 current_function = None
 functions = {}
 global_vars= []
@@ -180,10 +180,11 @@ class CodeGen(STransformer):
         return tree
     def _print(self,tree):
         global out
-        out += """pop rsi
+        out += """pop rdx
 mov rax,1
-lea rdi,[rip+print_string]
-call _printf
+mov rdi,1
+lea rsi,[rip+print_string]
+call _dprintf
 """ 
     def funcdef(self,tree):
         current_function =functions[tree.tail[0].tail[0]]
@@ -276,6 +277,7 @@ def generate(ast):
     out += """
 .globl start
 start:
+and rsp,~15
 
 call _main
 """
@@ -296,4 +298,5 @@ syscall
 """
     out += 'printf_string: .asciz "%c: %d\\n"\n'
     out += 'print_string: .asciz "%d\\n"\n'
+    out += 'file_mode: .asciz "w"'
     return vars+out
