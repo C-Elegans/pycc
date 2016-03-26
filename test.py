@@ -1,4 +1,5 @@
 import os,subprocess
+from joblib import Parallel, delayed
 def compile_test(file):
     name = os.path.splitext(file)[0]
     print name
@@ -12,10 +13,9 @@ def run(file):
     output = p.stdout.read()
     print output
     return output
-tests = open("tests.list","r").readlines()
-for line in tests:
-
-    tokens = line.split()
+    
+def run_test(test_name):
+    tokens = test_name.split()
     if tokens:
         print tokens[0]
         compile_test(tokens[0])
@@ -29,6 +29,12 @@ for line in tests:
                 raise ValueError("output does not match test case")
     name = os.path.splitext(tokens[0])[0]
     os.system("rm test/%s.s"%(name))
+    
+    
+tests = open("tests.list","r").readlines()
+
+Parallel(n_jobs=len(tests))(delayed(run_test)(line) for line in tests)
+    
 print "All %d tests passed!" % (len(tests))
         
 
