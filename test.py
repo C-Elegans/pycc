@@ -4,11 +4,11 @@ def compile_test(file):
     print name
     os.system("python compiler.py test/%s.c test/%s.s"%(name,name))
     os.system("as -c test/%s.s -o test/%s.o"%(name,name))
-    os.system("ld -lc test/%s.o -o test/%s"%(name,name))
+    os.system("ld -lc test/%s.o -o test/%s.oo"%(name,name))
 def run(file):
     name = os.path.splitext(file)[0]
     
-    p = subprocess.Popen("test/"+name, stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    p = subprocess.Popen("test/"+name+".oo", stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     output = p.stdout.read()
     print output
     return output
