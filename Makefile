@@ -10,3 +10,5 @@ clean:
 	rm *.s
 	rm *.o
 	rm main
+check:
+	python test.py

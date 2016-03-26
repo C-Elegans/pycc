@@ -1,5 +1,3 @@
-from peachpy import *
-from peachpy.x86_64 import *
 from plyplus import *
 blockid = 0
 out = ".text\n"
