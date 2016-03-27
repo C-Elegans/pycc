@@ -6,12 +6,15 @@ fib(int n) -> int{
 	if(n==1){
 	return 1
 	}
-	return 2
+	int n1 = fib(n-1)
+	int n2 = fib(n-2)
+	return n1+n2
 }
 main() -> int{
-	print fib(10)
-	print fib(0)
-	print fib(1)
+	for(int i=1;i<20;i++){
+	print fib(i)
+	
+	}
 	
 	return 0
 
