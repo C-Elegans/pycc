@@ -210,6 +210,7 @@ call _dprintf
         
         if current_function.returns != "void":
             out += "pop rax\n"
+            out += "mov rsp,rbp\npop rbp\nret\n"
         else:
             raise ValueError("Cannot return from a void function")
     def ifbegin(self,tree):

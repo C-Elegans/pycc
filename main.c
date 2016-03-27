@@ -1,14 +1,17 @@
 
-test(int x)-> int{
-	print x*4
+fib(int n) -> int{
+	if(n==0){
+	return 0
+	}
+	if(n==1){
+	return 1
+	}
+	return 2
 }
 main() -> int{
-	int x=0
-	for(int i=0;i<=20;i++) {
-		x=x+i
-		test(i)
-	}
-	
+	print fib(10)
+	print fib(0)
+	print fib(1)
 	
 	return 0
 
