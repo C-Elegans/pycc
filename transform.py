@@ -22,7 +22,10 @@ class FunctionT(STransformer):
             raise SyntaxError("Function %s not defined" % (name))
         if params != func_params[name]:
             raise SyntaxError("Function %s expects %d parameter(s). Found: %d" % (name,func_params[name], params))
-        
+class SubExprRemover(STransformer):
+    def expr(self,tree):
+        print tree   
+        return tree.tail[0]     
 class TTransformer(STransformer):
     if_id = 0
     def _if(self,tree):
@@ -68,4 +71,8 @@ class TTransformer(STransformer):
             print tree.select("func")
             print tree.tail[0]
             tree.tail[0].tail.append(STree("return_needed",[]))
-        return tree
+        if tree.select("expr"):
+            print tree.tail
+            tree =SubExprRemover().transform(tree)
+            
+        return STree("expr",[tree])

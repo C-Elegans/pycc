@@ -6,7 +6,7 @@ file = preprocess.process(file)
 ast = parser.parse(file)
 
 ast = transform.transform(ast)
-
+print ast.pretty()
 out = codegen.generate(ast)
 out = peephole.optimize(out)
 #print out
