@@ -7,25 +7,34 @@ functions = {}
 global_vars= []
 registers_32 = ["edi","esi","edx","ecx","r8d","r9d"]
 registers_64 = ["rdi","rsi","rdx","rcx","r8","r9"]
+class Variable():
+    def __init__(self,address,size):
+        self.address = address
+        self.size = size
 class Function():
     def __init__(self,name, ret,params,parnames):
         self.name = name
-        self.variable_offsets = {}
+        self.variables = {}
         self.bp = 0
         self.params = params
         self.returns = ret
         self.parnames = parnames
-    def add_var(self,name):
-        self.variable_offsets[name] = self.bp+4
-        self.bp += 4
+    def add_var(self,name,size):
+        addr = ((self.bp +size-1) & ~(size-1))+size
+        var = Variable(addr,size)
+        self.variables[name] = var
+        self.bp =addr
     def __repr__(self):
-        return str(self.name)+"("+str(self.parnames) +")" +"->"+self.returns+" vars: "+ str(self.variable_offsets)+ " size: " + str(self.bp)
+        return str(self.name)+"("+str(self.parnames) +")" +"->"+self.returns+" vars: "+ str(self.variables)+ " size: " + str(self.bp)
 class VariableTransform(STransformer):
     def vardec(self,tree):
         if current_function:
+            size=4
+            if tree.select("ptr"):
+                size=8 
             f=current_function
-            name = tree.tail[0].tail[0]
-            f.add_var(name)    
+            name = tree.tail[1].tail[0]
+            f.add_var(name,size)    
         return tree
     def assign(self,tree):
         if not current_function:
@@ -73,8 +82,12 @@ class Expr(STransformer):
     def var(self,tree):
         global out
         varname = tree.tail[0].tail[0]
-        if varname in current_function.variable_offsets:
-            out += "mov eax,[rbp-"+str(current_function.variable_offsets[varname])+"]\n"
+        if varname in current_function.variables:
+            var = current_function.variables[varname]
+            if var.size == 4:
+                out += "mov eax,[rbp-"+str(var.address)+"]\n"
+            if var.size == 8:
+                out += "mov rax,[rbp-"+str(var.address)+"]\n"
         elif varname in global_vars:
             out += "mov eax,[rip+_"+varname+"]\n"
         else:
@@ -166,16 +179,34 @@ class Expr(STransformer):
 class CodeGen(STransformer):
     def assign(self, tree):
         global out,global_vars
-        varname = tree.tail[0].tail[0].tail[0]
-        if varname in current_function.variable_offsets:
+        varname = tree.tail[0].tail[1].tail[0]
+        if varname in current_function.variables:
+            var = current_function.variables[varname]
             out += "pop rbx\n"
-            out += "mov [rbp-"+str(current_function.variable_offsets[varname])+"],ebx\n"
+            if var.size == 4:
+                out += "mov [rbp-"+str(var.address)+"],ebx\n"
+            if var.size == 8:
+                out += "mov [rbp-"+str(var.address)+"],rbx\n"    
         elif varname in global_vars:
             out += "pop rbx\n"
             out += "mov [rip+_"+varname+"],ebx\n"
         else:
             raise SyntaxError("No variable named "+varname)
         return tree
+    def adr(self,tree):
+        print "Address of %s" % (tree.tail[0].tail[0].tail[0])
+        global out
+        varname = tree.tail[0].tail[0].tail[0]
+        if varname in current_function.variables:
+            
+            out += "lea rax,[rbp-"+str(current_function.variables[varname].address)+"]\n"
+        elif varname in global_vars:
+            
+            out += "lea rax,[rip+_"+varname+"]\n"
+        else:
+            raise SyntaxError("No variable named "+varname)
+        out += "push rax\n"
+        
     def _print(self,tree):
         global out
         out += """pop rdx
@@ -270,7 +301,13 @@ def generate(ast):
             for i,name in enumerate(current_function.parnames):
                 print name
                 print registers_64[i]
-                out += "mov [rbp-"+str(current_function.variable_offsets[name])+"],"+registers_32[i]+"\n"
+                var = current_function.variables[name]
+                reg = ""
+                if var.size == 4:
+                    reg = registers_32[i]
+                if var.size ==8:
+                    reg = registers_64[i]
+                out += "mov [rbp-"+str(var.address)+"],"+reg+"\n"
         CodeGen().transform(func)
     
    
