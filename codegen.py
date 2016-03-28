@@ -11,6 +11,8 @@ class Variable():
     def __init__(self,address,size):
         self.address = address
         self.size = size
+    def __repr__(self):
+        return str(self.address) + " s" + str(self.size)
 class Function():
     def __init__(self,name, ret,params,parnames):
         self.name = name
@@ -176,10 +178,18 @@ class Expr(STransformer):
         global out,blockid
         out += "block_%d_end:\n" % (blockid)
         blockid += 1
+    def deref(self,tree):  
+        global out
+        out += "pop rax\n"
+        out += "mov rax,[rax]\n"
+        out += "push rax\n"
 class CodeGen(STransformer):
     def assign(self, tree):
         global out,global_vars
-        varname = tree.tail[0].tail[1].tail[0]
+        if(len(tree.tail[0].tail) == 2):
+            varname = tree.tail[0].tail[1].tail[0]
+        else:
+            varname = tree.tail[0].tail[0].tail[0]
         if varname in current_function.variables:
             var = current_function.variables[varname]
             out += "pop rbx\n"
@@ -206,7 +216,7 @@ class CodeGen(STransformer):
         else:
             raise SyntaxError("No variable named "+varname)
         out += "push rax\n"
-        
+    
     def _print(self,tree):
         global out
         out += """pop rdx

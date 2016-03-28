@@ -6,7 +6,7 @@ funcparams: (vardec)? (',' vardec)* ;
 assign: (vardec|var) '=' (expr)  ;
 vardec: (vartype) (identifier)  ;
 var: (identifier) ;
-expr: '\('? (var|number|arith|func|cmp|adr) '\)'? ;
+expr: '\('? (var|number|arith|func|cmp|adr|deref) '\)'? ;
 add: (expr) '\+' (expr) ;
 sub: (expr) '\-' (expr) ;
 mul: (expr) STAR (expr) ;
@@ -24,6 +24,7 @@ le: (expr) '<=' (expr) ;
 ge: (expr) '>=' (expr) ;
 ne: (expr) '!=' (expr) ;
 adr: '&' (var) ;
+deref: STAR (var) ;
 @cmp: lt|gt|eq|le|ge|ne ;
 
 block: '{' (statement|NEWLINE)+ '}' ;
